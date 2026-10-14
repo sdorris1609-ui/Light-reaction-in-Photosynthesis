@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Light Reaction Simulator</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #eef9f0; padding: 20px; }
+  h1 { color: #2a6f37; }
+  .control-group { margin-bottom: 20px; }
+  label { font-weight: bold; }
+  input[type="range"] { width: 300px; }
+  #output { margin-top: 20px; font-size: 1.3em; }
+  canvas { border: 1px solid #ccc; margin-top: 20px; background: white; }
+</style>
+</head>
+<body>
+
+<h1>Light Absorption & ATP/NADPH Production Simulator</h1>
+<p>Adjust the amount of light absorbed by chlorophyll to see how ATP and NADPH production changes. This is a simplified conceptual model.</p>
+
+<div class="control-group">
+  <label for="light">Light Absorbed by Chlorophyll</label><br>
+  <input type="range" id="light" min="0" max="100" value="50">
+  <span id="lightValue">50</span>
+</div>
+
+<div id="output">
+  ATP Production Rate: <span id="atpRate">0</span><br>
+  NADPH Production Rate: <span id="nadphRate">0</span>
+</div>
+
+<canvas id="graph" width="500" height="250"></canvas>
+
+<script>
+  const lightSlider = document.getElementById('light');
+  const lightValueSpan = document.getElementById('lightValue');
+  const atpRateSpan = document.getElementById('atpRate');
+  const nadphRateSpan = document.getElementById('nadphRate');
+  const canvas = document.getElementById('graph');
+  const ctx = canvas.getContext('2d');
+
+  function update() {
+    const light = parseInt(lightSlider.value, 10);
+    lightValueSpan.textContent = light;
+
+    const atpRate = (light * 1.2).toFixed(1);
+    const nadphRate = (light * 1.0).toFixed(1);
+
+    atpRateSpan.textContent = atpRate;
+    nadphRateSpan.textContent = nadphRate;
+
+    drawGraph(light, atpRate, nadphRate);
+  }
+
+  function drawGraph(light, atpRate, nadphRate) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = "#000";
+    ctx.beginPath();
+    ctx.moveTo(40, 10);
+    ctx.lineTo(40, 220);
+    ctx.lineTo(480, 220);
+    ctx.stroke();
+
+    ctx.font = "12px Arial";
+    ctx.fillText("Light Absorption", 10, 20);
+    ctx.fillText("ATP/NADPH Production", 330, 240);
+
+    const x = 40 + (light / 100) * 440;
+
+    const yATP = 220 - (atpRate / 120) * 210;
+    ctx.fillStyle = "green";
+    ctx.beginPath();
+    ctx.arc(x, yATP, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillText(`ATP: ${atpRate}`, x + 10, yATP - 10);
+
+    const yNADPH = 220 - (nadphRate / 100) * 210;
+    ctx.fillStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(x, yNADPH, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillText(`NADPH: ${nadphRate}`, x + 10, yNADPH + 5);
+  }
+
+  lightSlider.addEventListener('input', update);
+  update();
+</script>
+
+</body>
+</html>
